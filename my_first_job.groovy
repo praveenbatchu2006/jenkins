@@ -25,3 +25,22 @@ job('test-environment-job') {
         shell('echo Running in test environment')
     }
 }
+
+listView('my-jobs') {
+    description('View containing all my jobs')
+    jobs {
+        name('hello-world-job')
+        name('welcome-message-job')
+        name('status-check-job')
+        name('test-environment-job')
+    }
+    columns {
+        status()
+        weather()
+        name()
+        lastSuccess()
+        lastFailure()
+        lastDuration()
+        buildButton()
+    }
+}
