@@ -10,7 +10,15 @@ job('hello-world-job') {
     }
     steps {
         shell('''
-            
+           
+            echo "Building Docker image"
+            if ! command -v docker &> /dev/null; then
+                echo "Docker not found. Installing Docker..."
+                sudo apt-get update
+                sudo apt-get install -y docker.io
+                sudo systemctl start docker
+                sudo systemctl enable docker
+            fi
             # Check if Dockerfile exists, create a basic one if not
             if [ ! -f Dockerfile ]; then
                 cat > Dockerfile << 'EOF'
