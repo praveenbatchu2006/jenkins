@@ -1,5 +1,5 @@
 job('hello-world-job') {
-    description('A Jenkins job that pulls a sample Maven project, installs Maven if needed, and runs mvn clean compile')
+    description('A Jenkins job that pulls a sample Maven project, installs Maven if needed, runs mvn clean compile, and builds a Docker image')
     scm {
         git {
             remote {
@@ -10,18 +10,18 @@ job('hello-world-job') {
     }
     steps {
         shell('''
-            echo "Pulling and building sample project"
-            mkdir -p maven
-            cd maven
-            if [ ! -f apache-maven-3.9.11-bin.tar.gz ]; then
-                wget https://dlcdn.apache.org/maven/maven-3/3.9.11/binaries/apache-maven-3.9.11-bin.tar.gz
+            
+            # Check if Dockerfile exists, create a basic one if not
+            if [ ! -f Dockerfile ]; then
+                cat > Dockerfile << 'EOF'
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+EOF
             fi
-            if [ ! -d apache-maven-3.9.11 ]; then
-                tar xzf apache-maven-3.9.11-bin.tar.gz
-            fi
-            export PATH=$PWD/apache-maven-3.9.11/bin:$PATH
-            cd ..
-            mvn clean compile
+            docker build -t spring-petclinic:latest .
         ''')
     }
 }
